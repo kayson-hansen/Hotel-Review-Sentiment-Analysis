@@ -17,7 +17,7 @@ def load_dataset(files):
                 elif row[0] == '10' or '20':
                     labels.append(0)
                     reviews.append(row[1])
-
+            f.close()
     return reviews, labels
 
 
