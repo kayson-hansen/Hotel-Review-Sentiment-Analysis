@@ -3,27 +3,28 @@ import numpy as np
 import spacy
 
 
-def load_dataset(filename):
+def load_dataset(files):
     labels = []
     reviews = []
-    with open(filename, 'r') as f:
-        reader = csv.reader(f)
-        for row in reader:
-            # only include 1 star, 2 star, 4 star, and 5 star reviews
-            if row[0] == '40' or '50':
-                labels.append(1)
-                reviews.append(row[1])
-            elif row[0] == '10' or '20':
-                labels.append(0)
-                reviews.append(row[1])
+    for filename in files:
+        with open(filename, 'r') as f:
+            reader = csv.reader(f)
+            for row in reader:
+                # only include 1 star, 2 star, 4 star, and 5 star reviews
+                if row[0] == '40' or '50':
+                    labels.append(1)
+                    reviews.append(row[1])
+                elif row[0] == '10' or '20':
+                    labels.append(0)
+                    reviews.append(row[1])
 
     return reviews, labels
 
 
-def get_inputs_and_outputs(filename):
-    review_texts, review_scores = load_dataset(filename)
-    nlp = spacy.load('en_core_web_md')
-    m = 10000
+def get_inputs_and_outputs(filenames):
+    review_texts, review_scores = load_dataset(filenames)
+    nlp = spacy.load('en_core_web_sm')
+    m = len(review_scores)
     n = len(nlp('hotel').vector)
 
     X = np.zeros((m, n))

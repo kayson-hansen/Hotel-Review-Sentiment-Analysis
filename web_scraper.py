@@ -18,8 +18,7 @@ file_paths = [
     "/users/kaysonhansen/cs129/HotelReviewData/ParkMGMReviews.csv",
     "/users/kaysonhansen/cs129/HotelReviewData/VdaraHotelReviews.csv",
     "/users/kaysonhansen/cs129/HotelReviewData/ExcaliburHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/WynnHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/RioHotelReviews.csv"
+    "/users/kaysonhansen/cs129/HotelReviewData/WynnHotelReviews.csv"
 ]
 
 # There are 10 reviews per page, giving a total of 10 * pages_to_scrape reviews per hotel
@@ -41,8 +40,7 @@ urls = [
     "https://www.tripadvisor.com/Hotel_Review-g45963-d97712-Reviews-Park_MGM_Las_Vegas-Las_Vegas_Nevada.html",
     "https://www.tripadvisor.com/Hotel_Review-g45963-d1474086-Reviews-Vdara_Hotel_Spa-Las_Vegas_Nevada.html",
     "https://www.tripadvisor.com/Hotel_Review-g45963-d97786-Reviews-Excalibur_Hotel_Casino-Las_Vegas_Nevada.html",
-    "https://www.tripadvisor.com/Hotel_Review-g45963-d503598-Reviews-Wynn_Las_Vegas-Las_Vegas_Nevada.html",
-    "https://www.tripadvisor.com/Hotel_Review-g45963-d91673-Reviews-Rio_All_Suite_Hotel_Casino-Las_Vegas_Nevada.html"
+    "https://www.tripadvisor.com/Hotel_Review-g45963-d503598-Reviews-Wynn_Las_Vegas-Las_Vegas_Nevada.html"
 ]
 
 # n = which hotel to scrape
@@ -51,49 +49,51 @@ urls = [
 # 10 = Palazzo, 11 = Park MGM, 12 = Vdara, 13 = Excalibur, 14 = Wynn, 15 = Rio
 n = 15
 
-# import the webdriver
-driver = webdriver.Chrome()
-driver.get(urls[n])
 
-# open the file to save the review
-csvFile = open(file_paths[n], 'a', encoding="utf-8")
-csvWriter = csv.writer(csvFile)
+def scrape_hotel_reviews(n):
+    # import the webdriver
+    driver = webdriver.Chrome()
+    driver.get(urls[n])
 
-for i in range(0, pages_to_scrape):
+    # open the file to save the review
+    csvFile = open(file_paths[n], 'a', encoding="utf-8")
+    csvWriter = csv.writer(csvFile)
 
-    # give the DOM time to load (3 seconds)
-    time.sleep(3)
+    for i in range(0, pages_to_scrape):
 
-    # Click the "expand review" link to reveal the entire review.
-    driver.find_element("xpath",
-                        ".//div[contains(@data-test-target, 'expand-review')]").click()
+        # give the DOM time to load (3 seconds)
+        time.sleep(3)
 
-    # Find all reviews in the current page and store them all to a container
-    container = driver.find_elements("xpath", "//div[@data-reviewid]")
+        # Click the "expand review" link to reveal the entire review.
+        driver.find_element("xpath",
+                            ".//div[contains(@data-test-target, 'expand-review')]").click()
 
-   # Parse each review in the container
-    for j in range(len(container)):  # A loop defined by the number of reviews
+        # Find all reviews in the current page and store them all to a container
+        container = driver.find_elements("xpath", "//div[@data-reviewid]")
 
-        # Grab the rating
-        rating = container[j].find_element("xpath",
-                                           ".//span[contains(@class, 'ui_bubble_rating bubble_')]").get_attribute("class").split("_")[3]
+       # Parse each review in the container
+        for j in range(len(container)):  # A loop defined by the number of reviews
 
-        """
-        # Grab the title
-        title = container[j].find_element("xpath",
-                                          ".//div[contains(@data-test-target, 'review-title')]").text
-        """
+            # Grab the rating
+            rating = container[j].find_element("xpath",
+                                               ".//span[contains(@class, 'ui_bubble_rating bubble_')]").get_attribute("class").split("_")[3]
 
-        # Grab the review text, removing newlines and commas
-        review = container[j].find_element("xpath",
-                                           ".//q[@class='QewHA H4 _a']").text.replace("\n", "  ").replace(",", "")
+            """
+            # Grab the title
+            title = container[j].find_element("xpath",
+                                              ".//div[contains(@data-test-target, 'review-title')]").text
+            """
 
-        # Write review data to the csv
-        csvWriter.writerow([rating, review])
+            # Grab the review text, removing newlines and commas
+            review = container[j].find_element("xpath",
+                                               ".//q[@class='QewHA H4 _a']").text.replace("\n", "  ").replace(",", "")
 
-    # When all the reviews in the container have been processed, move to the next page and repeat
-    driver.find_element("xpath",
-                        './/a[contains(@class, "ui_button nav next primary ")]').click()
+            # Write review data to the csv
+            csvWriter.writerow([rating, review])
 
-# When all pages have been processed, quit the driver
-driver.quit()
+        # When all the reviews in the container have been processed, move to the next page and repeat
+        driver.find_element("xpath",
+                            './/a[contains(@class, "ui_button nav next primary ")]').click()
+
+    # When all pages have been processed, quit the driver
+    driver.quit()
