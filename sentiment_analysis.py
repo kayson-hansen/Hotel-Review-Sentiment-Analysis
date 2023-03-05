@@ -1,4 +1,7 @@
 from load_data import get_inputs_and_outputs
+import tensorflow as tf
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
 
 
 file_paths = ["/users/kaysonhansen/cs129/HotelReviewData/VenetianHotelReviews.csv",
@@ -21,3 +24,24 @@ y_test = Y[m2:m, :]
 
 print(m)
 print(n)
+
+# Tensorflow Neural Network
+model = Sequential(
+    [
+        Dense(units = n, activation='sigmoid', name = 'layer1'),
+        Dense(units = (n+1) / 2, activation='sigmoid', name = 'layer2'),
+        Dense(units = 1, activation='linear', name = 'layer3')
+    ]
+)
+model.compile(
+    loss = tf.keras.losses.BinaryCrossentropy(),
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.01),
+    metrics = [tf.keras.metrics.Accuracy()]
+)
+
+model.fit(
+    x_train, y_train,           
+    epochs=10, batch_size = 100
+)
+
+model.evaluate(x_test, y_test, batch_size=200)
