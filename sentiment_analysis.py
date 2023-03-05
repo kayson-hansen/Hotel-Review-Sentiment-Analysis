@@ -8,7 +8,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 
 
-X = np.load('embeddings.npy')
+X = np.load('all_embeddings.npy')
 Y = get_outputs(file_paths)
 m = X.shape[0]
 n = X.shape[1]
@@ -40,11 +40,10 @@ model.compile(
 
 model.fit(
     x_train, y_train,
-    epochs=100, batch_size=100
+    epochs=10, batch_size=100
 )
+
+print(model.evaluate(x_train, y_train, batch_size=200))
 
 # Evaluate the model on the cross-validation set
 print(model.evaluate(x_cv, y_cv, batch_size=200))
-
-# Evaluate the model on the test set
-print(model.evaluate(x_test, y_test, batch_size=200))
