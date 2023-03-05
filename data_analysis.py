@@ -62,4 +62,7 @@ print("Average rating: ", find_average_rating(reviews))
 print("Standard deviation: ", find_standard_deviation(reviews))
 
 plt.bar(reviews.keys(), reviews.values(), color='b')
+plt.title('Rating star distribution')
+plt.xlabel('Number of stars')
+plt.ylabel('Number of reviews')
 plt.show()
