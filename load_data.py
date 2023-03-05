@@ -21,16 +21,17 @@ def load_dataset(files):
     return reviews, labels
 
 
-def get_inputs_and_outputs(filenames):
+def get_inputs(filenames):
     review_texts, review_scores = load_dataset(filenames)
     nlp = spacy.load('en_core_web_sm')
     m = len(review_scores)
     n = len(nlp('hotel').vector)
 
     X = np.zeros((m, n))
-    Y = np.zeros((m, 1))
 
     for i in range(m):
+        if i % 500 == 0:
+            print(i)
         tokens = nlp(review_texts[i])
         # use the mean of all the word embeddings as the total review embedding
         word_embeddings = []
@@ -40,6 +41,15 @@ def get_inputs_and_outputs(filenames):
         # can also use sum or max of word embeddings to find sentence embedding
         mean_embedding = np.mean(word_embeddings, axis=0)
         X[i] = mean_embedding
+
+    return X
+
+
+def get_outputs(filenames):
+    review_texts, review_scores = load_dataset(filenames)
+    m = len(review_scores)
+    Y = np.zeros((m, 1))
+    for i in range(m):
         Y[i] = review_scores[i]
 
-    return X, Y
+    return Y

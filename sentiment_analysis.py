@@ -1,4 +1,5 @@
-from load_data import get_inputs_and_outputs
+from load_data import get_outputs, get_inputs
+from web_scraper import file_paths
 import tensorflow as tf
 import spacy
 import numpy as np
@@ -7,9 +8,8 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 
 
-file_paths = ["/users/kaysonhansen/cs129/HotelReviewData/TestFile.csv"]
-
-X, Y = get_inputs_and_outputs(file_paths)
+X = np.load('embeddings.npy')
+Y = get_outputs(file_paths)
 m = X.shape[0]
 n = X.shape[1]
 
@@ -23,15 +23,13 @@ y_train = Y[:m1, :]
 y_cv = Y[m1:m2, :]
 y_test = Y[m2:m, :]
 
-print(m)
-print(n)
 
 # Tensorflow Neural Network
 model = Sequential(
     [
-        Dense(units=n, activation='sigmoid', name='layer1'),
-        Dense(units=(n+1) / 2, activation='sigmoid', name='layer2'),
-        Dense(units=1, activation='linear', name='layer3')
+        Dense(units=96, activation='relu', name='layer1'),
+        Dense(units=50, activation='relu', name='layer2'),
+        Dense(units=1, activation='sigmoid', name='layer3')
     ]
 )
 model.compile(
@@ -42,7 +40,11 @@ model.compile(
 
 model.fit(
     x_train, y_train,
-    epochs=10, batch_size=13
+    epochs=100, batch_size=100
 )
 
-print(model.evaluate(x_test, y_test, batch_size=13))
+# Evaluate the model on the cross-validation set
+print(model.evaluate(x_cv, y_cv, batch_size=200))
+
+# Evaluate the model on the test set
+print(model.evaluate(x_test, y_test, batch_size=200))
