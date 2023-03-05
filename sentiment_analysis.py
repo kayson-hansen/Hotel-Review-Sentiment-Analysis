@@ -11,6 +11,7 @@ X, Y = get_inputs_and_outputs(filename)
 m = X.shape[0]
 n = X.shape[1]
 
+# splits are 60/20/20 train/cross-validation/test
 m1 = int(m * 3/5)
 m2 = int(m * 4/5)
 x_train = X[:m1, :]

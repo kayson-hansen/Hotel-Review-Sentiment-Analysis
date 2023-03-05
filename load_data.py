@@ -9,6 +9,7 @@ def load_dataset(filename):
     with open(filename, 'r') as f:
         reader = csv.reader(f)
         for row in reader:
+            # only include 1 star, 2 star, 4 star, and 5 star reviews
             if row[0] == '40' or '50':
                 labels.append(1)
                 reviews.append(row[1])
@@ -35,6 +36,7 @@ def get_inputs_and_outputs(filename):
         for token in tokens:
             if not token.is_stop:
                 word_embeddings.append(token.vector)
+        # can also use sum or max of word embeddings to find sentence embedding
         mean_embedding = np.mean(word_embeddings, axis=0)
         X[i] = mean_embedding
         Y[i] = review_scores[i]
