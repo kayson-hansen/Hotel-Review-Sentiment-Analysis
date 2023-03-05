@@ -1,21 +1,20 @@
-from load_data import get_outputs
+from load_data import get_inputs, get_outputs, load_dataset
 from web_scraper import file_paths
 import tensorflow as tf
 import numpy as np
 import csv
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
-from tensorflow.keras.regularizers import L2
 
 
-X = np.load("Embeddings/AllEmbeddings.npy")
-Y = get_outputs(file_paths)
+X = get_inputs(["/users/kaysonhansen/cs129/HotelReviewData/TestFile.csv"])
+Y = get_outputs(["/users/kaysonhansen/cs129/HotelReviewData/TestFile.csv"])
 m = X.shape[0]
 n = X.shape[1]
 
-# splits are 80/10/10 train/cross-validation/test
-m1 = int(m * 8/10)
-m2 = int(m * 9/10)
+# splits are 60/20/20 train/cross-validation/test
+m1 = int(m * 3/5)
+m2 = int(m * 4/5)
 x_train = X[:m1, :]
 x_cv = X[m1:m2, :]
 x_test = X[m2:m, :]
@@ -27,12 +26,8 @@ y_test = Y[m2:m, :]
 # Tensorflow Neural Network
 model = Sequential(
     [
-        Dense(units=96, activation='relu', name='layer1',
-              kernel_regularizer=L2(0.03),),
-        Dense(units=48, activation='relu', name='layer2',
-              kernel_regularizer=L2(0.03)),
-        Dense(units=1, activation='sigmoid',
-              name='output', kernel_regularizer=L2(0.03))
+        Dense(units=96, activation='relu', name='layer1'),
+        Dense(units=1, activation='sigmoid', name='layer3')
     ]
 )
 model.compile(
@@ -42,7 +37,7 @@ model.compile(
 
 model.fit(
     x_train, y_train,
-    epochs=3, batch_size=64
+    epochs=10, batch_size=20
 )
 
 
@@ -62,7 +57,6 @@ for i in range(len(y_train)):
 train_accuracy /= m1
 print(train_accuracy)
 
-
 # evaluate model on cross-validation set
 cv_accuracy = 0
 for i in range(len(y_cv)):
@@ -71,7 +65,6 @@ for i in range(len(y_cv)):
 cv_accuracy /= (m2 - m1)
 print(cv_accuracy)
 
-"""
 # evaluate model on test set
 test_accuracy = 0
 for i in range(len(y_test)):
@@ -79,4 +72,3 @@ for i in range(len(y_test)):
         test_accuracy += 1
 test_accuracy /= (m - m2)
 print(test_accuracy)
-"""

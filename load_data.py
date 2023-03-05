@@ -11,10 +11,10 @@ def load_dataset(files):
             reader = csv.reader(f)
             for row in reader:
                 # only include 1 star, 2 star, 4 star, and 5 star reviews
-                if row[0] == '40' or '50':
+                if row[0] == '40' or row[0] == '50':
                     labels.append(1)
                     reviews.append(row[1])
-                elif row[0] == '10' or '20':
+                elif row[0] == '10' or row[0] == '20':
                     labels.append(0)
                     reviews.append(row[1])
             f.close()
@@ -30,6 +30,7 @@ def get_inputs(filenames):
     X = np.zeros((m, n))
 
     for i in range(m):
+        # measure the progress over time
         if i % 500 == 0:
             print(i)
         tokens = nlp(review_texts[i])

@@ -25,4 +25,4 @@ file_paths = [
 ]
 
 X = get_inputs(file_paths)
-np.save('all_embeddings.npy', X)
+np.save('Embeddings/AllEmbeddings.npy', X)
