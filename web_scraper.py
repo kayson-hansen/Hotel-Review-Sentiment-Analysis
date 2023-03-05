@@ -4,22 +4,22 @@ import time
 
 # The paths to the files to store the hotel review data
 file_paths = [
-    "/users/kaysonhansen/cs129/VenetianHotelReviews.csv",
-    "/users/kaysonhansen/cs129/MirageHotelReviews.csv",
-    "/users/kaysonhansen/cs129/MandalayBayHotelReviews.csv",
-    "/users/kaysonhansen/cs129/TrumpInternationalHotelReviews.csv",
-    "/users/kaysonhansen/cs129/LuxorHotelReviews.csv",
-    "/users/kaysonhansen/cs129/TreasureIslandHotelReviews.csv",
-    "/users/kaysonhansen/cs129/ParisHotelReviews.csv",
-    "/users/kaysonhansen/cs129/CaesarsPalaceHotelReviews.csv",
-    "/users/kaysonhansen/cs129/ARIAHotelReviews.csv",
-    "/users/kaysonhansen/cs129/PlanetHollywoodHotelReviews.csv",
-    "/users/kaysonhansen/cs129/PalazzoHotelReviews.csv",
-    "/users/kaysonhansen/cs129/ParkMGMReviews.csv",
-    "/users/kaysonhansen/cs129/VdaraHotelReviews.csv",
-    "/users/kaysonhansen/cs129/ExcaliburHotelReviews.csv",
-    "/users/kaysonhansen/cs129/WynnHotelReviews.csv",
-    "/users/kaysonhansen/cs129/RioHotelReviews.csv"
+    "/users/kaysonhansen/cs129/HotelReviewData/VenetianHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/MirageHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/MandalayBayHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/TrumpInternationalHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/LuxorHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/TreasureIslandHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/ParisHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/CaesarsPalaceHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/ARIAHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/PlanetHollywoodHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/PalazzoHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/ParkMGMReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/VdaraHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/ExcaliburHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/WynnHotelReviews.csv",
+    "/users/kaysonhansen/cs129/HotelReviewData/RioHotelReviews.csv"
 ]
 
 # There are 10 reviews per page, giving a total of 10 * pages_to_scrape reviews per hotel
