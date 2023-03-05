@@ -27,11 +27,8 @@ y_test = Y[m2:m, :]
 # Tensorflow Neural Network
 model = Sequential(
     [
-        InputLayer(input_shape=(n, )),
-        Dense(units=50, activation='relu', name='layer1',
+        Dense(units=96, activation='relu', name='layer1',
               kernel_regularizer=L2(0.03),),
-        Dense(units=25, activation='relu', name='layer2',
-              kernel_regularizer=L2(0.03)),
         Dense(units=1, activation='sigmoid',
               name='output', kernel_regularizer=L2(0.03))
     ]
@@ -72,6 +69,7 @@ for i in range(len(y_cv)):
 cv_accuracy /= (m2 - m1)
 print(cv_accuracy)
 
+"""
 # evaluate model on test set
 test_accuracy = 0
 for i in range(len(y_test)):
@@ -79,3 +77,4 @@ for i in range(len(y_test)):
         test_accuracy += 1
 test_accuracy /= (m - m2)
 print(test_accuracy)
+"""
