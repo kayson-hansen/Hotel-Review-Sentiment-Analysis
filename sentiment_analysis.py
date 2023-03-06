@@ -9,7 +9,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, confu
 import matplotlib.pyplot as plt
 
 
-def create_inputs_and_outputs(input_file, output_files):
+def create_inputs_and_outputs(input_file, output_files, shuffle=True):
     """ Takes a .npy input file of sentence embeddings and a list of files
     containing the reviews to get outputs from and generates numpy arrays X and Y.
     Called by evaluate_model.
@@ -26,12 +26,15 @@ def create_inputs_and_outputs(input_file, output_files):
 
     m = embeddings.shape[0]
     n = embeddings.shape[1]
-    # randomize data points so that each dataset is more evenly distributed across reviews from each hotel
-    random.seed(10)
     reviews = []
     for i in range(m):
         reviews.append((embeddings[i], ratings[i]))
-    random.shuffle(reviews)
+
+    # randomize data points so that each dataset is more evenly distributed across reviews from each hotel
+    if shuffle:
+        random.seed(10)
+        random.shuffle(reviews)
+
     X = np.zeros((m, n))
     Y = np.zeros((m, 1))
     for i in range(m):
@@ -179,10 +182,10 @@ def evaluate_model(input_filename, output_filenames, algorithm):
     print("Test set precision: ", precision_score(y_test, test_set_yhat))
     print("Test set recall: ", recall_score(y_test, test_set_yhat))
 
-    cm = confusion_matrix(y_train, train_set_yhat)
+    cm = confusion_matrix(y_cv, cv_set_yhat)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)
     disp.plot()
-    plt.title('Confusion matrix')
+    plt.title('Cross-validation set confusion matrix')
     plt.xlabel('Predicted sentiment')
     plt.ylabel('True sentiment')
     plt.show()
