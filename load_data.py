@@ -4,6 +4,14 @@ import spacy
 
 
 def load_dataset(files):
+    """_summary_
+
+    Args:
+        files (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     labels = []
     reviews = []
     for filename in files:
@@ -22,6 +30,14 @@ def load_dataset(files):
 
 
 def get_inputs(filenames):
+    """_summary_
+
+    Args:
+        filenames (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     review_texts, review_scores = load_dataset(filenames)
     nlp = spacy.load('en_core_web_sm')
     m = len(review_scores)
@@ -47,6 +63,14 @@ def get_inputs(filenames):
 
 
 def get_outputs(filenames):
+    """_summary_
+
+    Args:
+        filenames (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     review_texts, review_scores = load_dataset(filenames)
     m = len(review_scores)
     Y = np.zeros((m, 1))

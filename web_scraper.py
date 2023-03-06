@@ -51,6 +51,14 @@ n = 15
 
 
 def scrape_hotel_reviews(n):
+    """ Given a hotel to review, scrape reviews from pages_to_scrape pages (there are 10 reviews per page)
+
+        Args:
+        n (Int): which hotel to scrape
+
+        Returns:
+        (none)
+    """
     # import the webdriver
     driver = webdriver.Chrome()
     driver.get(urls[n])
