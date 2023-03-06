@@ -4,16 +4,19 @@ import spacy
 
 
 def load_dataset(files):
-    """_summary_
+    """ Given a list of files containing reviews and ratings, return whether each review
+    had a positive sentiment (4 or 5 stars) or a negative sentiment (1 or 2 stars). 
+    Discard the 3 star reviews. Called by get_inputs and get_outputs.
 
     Args:
-        files (_type_): _description_
+        files (List[String]): list of files containing input reviews and ratings
 
     Returns:
-        _type_: _description_
+        (List, List): a list (reviews) containing the text for each 1, 2, 4, or 5 star review,
+        and a list (labels) containing 1s or 0s corresponding to positive or negative sentiment
     """
-    labels = []
     reviews = []
+    labels = []
     for filename in files:
         with open(filename, 'r') as f:
             reader = csv.reader(f)
@@ -30,13 +33,15 @@ def load_dataset(files):
 
 
 def get_inputs(filenames):
-    """_summary_
+    """ From a set of files containing reviews and ratings, generate sentence embeddings by taking
+    the mean of all the word embeddings in the reviews and store them in a numpy matrix. Called 
+    in the generate_embeddings.py file.
 
     Args:
-        filenames (_type_): _description_
+        filenames (List[String]): list of files containing input reviews and ratings
 
     Returns:
-        _type_: _description_
+        (np.ndarray): vector of sentence embeddings, one for each input review, dimension num_inputs x num_features
     """
     review_texts, review_scores = load_dataset(filenames)
     nlp = spacy.load('en_core_web_sm')
@@ -63,13 +68,15 @@ def get_inputs(filenames):
 
 
 def get_outputs(filenames):
-    """_summary_
+    """ From a list of filenames containing reviews and ratings, store whether each
+    review contains positive or negative sentiment in a numpy array. Called by 
+    create_inputs_and_outputs in the sentiment_analysis.py file.
 
     Args:
-        filenames (_type_): _description_
+        filenames (List[String]): list of files containing input reviews and ratings
 
     Returns:
-        _type_: _description_
+        (np.ndarray): vector of output sentiments, dimension num_inputs x 1
     """
     review_texts, review_scores = load_dataset(filenames)
     m = len(review_scores)

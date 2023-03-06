@@ -12,13 +12,14 @@ import matplotlib.pyplot as plt
 def create_inputs_and_outputs(input_file, output_files):
     """ Takes a .npy input file of sentence embeddings and a list of files
     containing the reviews to get outputs from and generates numpy arrays X and Y.
+    Called by evaluate_model.
 
     Args:
         input_file (String): a .npy file containing the sentence embeddings for the input reviews
-        output_files (List[String]): a list containing the filenames that have all the input reviews
+        output_files (List[String]): a list containing the filenames that have all the input reviews and ratings
 
     Returns:
-        X (nparray), Y (nparray): the inputs and outputs for the model
+        X (np.ndarray), Y (np.ndarray): the inputs and outputs for the model
     """
     embeddings = np.load(input_file)
     ratings = get_outputs(output_files)
@@ -41,14 +42,15 @@ def create_inputs_and_outputs(input_file, output_files):
 
 
 def train_neural_network_model(x_train, y_train):
-    """ Given a set of inputs and outputs, train a neural network model using tensorflow
+    """ Given a set of inputs and outputs, train a neural network model using tensorflow. 
+    Called by evaluate_model.
 
     Args:
-        x_train (ndarray): train set inputs
-        y_train (ndarray): train set outputs
+        x_train (np.ndarray): train set inputs
+        y_train (np.ndarray): train set outputs
 
     Returns:
-        (tensorflow mode): trained neural network model
+        (tf.keras.model): trained neural network model
     """
     # n = number of input features
     n = x_train.shape[1]
@@ -77,14 +79,15 @@ def train_neural_network_model(x_train, y_train):
 
 
 def train_logistic_regression_model(x_train, y_train):
-    """ Given a set of inputs and outputs, train a logistic regression model using tensorflow
+    """ Given a set of inputs and outputs, train a logistic regression model using tensorflow.
+    Called by evaluate_model.
 
     Args:
-        x_train (ndarray): train set inputs
-        y_train (ndarray): train set outputs
+        x_train (np.ndarray): train set inputs
+        y_train (np.ndarray): train set outputs
 
     Returns:
-        (tensorflow model): trained logistic regression model
+        (tf.keras.model): trained logistic regression model
     """
     # n = number of input features
     n = x_train.shape[1]
@@ -93,7 +96,7 @@ def train_logistic_regression_model(x_train, y_train):
         [
             InputLayer(input_shape=(n, )),
             Dense(units=1, activation='sigmoid',
-                  name='output', kernel_regularizer=L2(0.01))
+                  name='output')
         ]
     )
 
@@ -111,6 +114,15 @@ def train_logistic_regression_model(x_train, y_train):
 
 
 def evaluate_model(input_filename, output_filenames, algorithm):
+    """ Given an .npy file containing sentence embeddings as inputs, a list of files containing
+    the reviews and ratings, and an algorithm to use, train and evaluate the accuracy, precision,
+    and recall of the given model. Also generates a confusion matrix.
+
+    Args:
+        input_filename (String): a .npy file containing all the sentence embeddings for each review
+        output_filenames (List_String): a list of files containing the reviews and ratings
+        algorithm (String): which type of model to train, either "neural network" or "logistic regression"
+    """
     X, Y = create_inputs_and_outputs(
         input_filename, output_filenames)
     m = X.shape[0]
@@ -167,7 +179,6 @@ def evaluate_model(input_filename, output_filenames, algorithm):
     print("Test set precision: ", precision_score(y_test, test_set_yhat))
     print("Test set recall: ", recall_score(y_test, test_set_yhat))
 
-    # create confusion matrix from model predictions
     cm = confusion_matrix(y_train, train_set_yhat)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)
     disp.plot()
