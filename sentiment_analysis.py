@@ -45,7 +45,7 @@ def create_inputs_and_outputs(input_file, output_files, shuffle=True):
 
 
 def train_neural_network_model(x_train, y_train):
-    """ Given a set of inputs and outputs, train a neural network model using tensorflow. 
+    """ Given a set of inputs and outputs, train a neural network model using tensorflow.
     Called by evaluate_model.
 
     Args:
@@ -70,6 +70,43 @@ def train_neural_network_model(x_train, y_train):
 
     model.compile(
         loss=tf.keras.losses.BinaryCrossentropy(),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.05)
+    )
+
+    model.fit(
+        x_train, y_train,
+        epochs=3, batch_size=64
+    )
+
+    return model
+
+
+def train_softmax_neural_network_model(x_train, y_train):
+    """ Given a set of inputs and outputs, train a neural network model using tensorflow.
+    Called by evaluate_model.
+
+    Args:
+        x_train (np.ndarray): train set inputs
+        y_train (np.ndarray): train set outputs
+
+    Returns:
+        (tf.keras.model): trained neural network model
+    """
+    # n = number of input features
+    n = x_train.shape[1]
+
+    model = Sequential(
+        [
+            InputLayer(input_shape=(n, )),
+            Dense(units=48, activation='relu', name='layer2'),
+            Dense(units=20, activation='relu', name='layer3'),
+            Dense(units=10, activation='relu', name='layer4'),
+            Dense(units=5, activation='softmax', name='output')
+        ]
+    )
+
+    model.compile(
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
         optimizer=tf.keras.optimizers.Adam(learning_rate=0.05)
     )
 
@@ -116,7 +153,42 @@ def train_logistic_regression_model(x_train, y_train):
     return model
 
 
-def evaluate_model(input_filename, output_filenames, algorithm):
+def train_softmax_logistic_regression_model(x_train, y_train):
+    """ Given a set of inputs and outputs, train a logistic regression model using tensorflow.
+    Called by evaluate_model.
+
+    Args:
+        x_train (np.ndarray): train set inputs
+        y_train (np.ndarray): train set outputs
+
+    Returns:
+        (tf.keras.model): trained logistic regression model
+    """
+    # n = number of input features
+    n = x_train.shape[1]
+
+    model = Sequential(
+        [
+            InputLayer(input_shape=(n, )),
+            Dense(units=3, activation='softmax',
+                  name='output')
+        ]
+    )
+
+    model.compile(
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+        optimizer=tf.keras.optimizers.Adam(learning_rate=0.05)
+    )
+
+    model.fit(
+        x_train, y_train,
+        epochs=3, batch_size=64
+    )
+
+    return model
+
+
+def evaluate_model(input_filename, output_filenames, algorithm, softmax=True, confusion_matrix=False):
     """ Given an .npy file containing sentence embeddings as inputs, a list of files containing
     the reviews and ratings, and an algorithm to use, train and evaluate the accuracy, precision,
     and recall of the given model. Also generates a confusion matrix.
@@ -140,19 +212,26 @@ def evaluate_model(input_filename, output_filenames, algorithm):
     y_cv = Y[m1:m2, :]
     y_test = Y[m2:m, :]
 
-    if algorithm == 'neural network':
+    if algorithm == 'neural network' and softmax:
+        model = train_softmax_neural_network_model(x_train, y_train)
+    elif algorithm == 'neural network' and not softmax:
         model = train_neural_network_model(x_train, y_train)
-    elif algorithm == 'logistic regression':
+    elif algorithm == 'logistic regression' and softmax:
+        model = train_softmax_logistic_regression_model(x_train, y_train)
+    else:
         model = train_logistic_regression_model(x_train, y_train)
 
     # evaluate model on train set
     train_set_predictions = model.predict(x_train)
     train_set_yhat = np.zeros_like(train_set_predictions)
     for i in range(len(x_train)):
-        if train_set_predictions[i] >= 0.5:
-            train_set_yhat[i] = 1
+        if softmax:
+            train_set_yhat = np.argmax(train_set_predictions[i]) + 1
         else:
-            train_set_yhat[i] = 0
+            if train_set_predictions[i] >= 0.5:
+                train_set_yhat[i] = 1
+            else:
+                train_set_yhat[i] = 0
     print("Train set accuracy: ", accuracy_score(y_train, train_set_yhat))
     print("Train set precision: ", precision_score(y_train, train_set_yhat))
     print("Train set recall: ", recall_score(y_train, train_set_yhat))
@@ -182,6 +261,11 @@ def evaluate_model(input_filename, output_filenames, algorithm):
     print("Test set precision: ", precision_score(y_test, test_set_yhat))
     print("Test set recall: ", recall_score(y_test, test_set_yhat))
 
+    if confusion_matrix:
+        generate_confusion_matrix(y_cv, cv_set_yhat)
+
+
+def generate_confusion_matrix(y_cv, cv_set_yhat):
     cm = confusion_matrix(y_cv, cv_set_yhat)
     disp = ConfusionMatrixDisplay(confusion_matrix=cm)
     disp.plot()

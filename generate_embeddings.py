@@ -1,9 +1,7 @@
 # This file is meant to be run once to generate a file containing the numpy embeddings for all the reviews,
 # so that you don't have to wait for them to be generated each time you want to test the neural network
-from load_data import get_inputs
-import spacy
+from load_data import get_mean_embedding_inputs, get_doc2vec_inputs
 import numpy as np
-import csv
 
 
 file_paths = [
@@ -24,5 +22,8 @@ file_paths = [
     "/users/kaysonhansen/cs129/HotelReviewData/WynnHotelReviews.csv"
 ]
 
-X = get_inputs(file_paths)
-np.save('Embeddings/AllEmbeddings.npy', X)
+X = get_doc2vec_inputs(file_paths, True)
+# X = get_mean_embedding_inputs(file_paths, True)
+np.save('Embeddings/MulticlassDoc2VecEmbeddings.npy', X)
+# np.save('Embeddings/Doc2VecEmbeddings.npy', X)
+# np.save('Embeddings/MulticlassMeanWordEmbeddings.npy', X)
