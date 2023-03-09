@@ -8,7 +8,7 @@ model = 'neural network'
 # embedding can be 'doc2vec' or 'mean'
 embedding = 'doc2vec'
 # output can be 'softmax' or 'binary'
-output = 'binary'
+output = 'softmax'
 
 # trains and evaluates the model of your choice
 if embedding == 'doc2vec' and output == 'softmax':
