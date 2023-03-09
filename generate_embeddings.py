@@ -22,8 +22,18 @@ file_paths = [
     "/users/kaysonhansen/cs129/HotelReviewData/WynnHotelReviews.csv"
 ]
 
-X = get_doc2vec_inputs(file_paths, True)
-# X = get_mean_embedding_inputs(file_paths, True)
-np.save('Embeddings/MulticlassDoc2VecEmbeddings.npy', X)
-# np.save('Embeddings/Doc2VecEmbeddings.npy', X)
-# np.save('Embeddings/MulticlassMeanWordEmbeddings.npy', X)
+# only one of the following should be uncommented, depending on if the model
+# has binary or multiclass outputs and uses doc2vec embeddings or mean
+# word embeddings
+
+#X = get_doc2vec_inputs(file_paths, multiclass=False)
+#np.save('Embeddings/Doc2VecEmbeddings.npy', X)
+
+#X = get_doc2vec_inputs(file_paths, multiclass=True)
+#np.save('Embeddings/MulticlassDoc2VecEmbeddings.npy', X)
+
+# X = get_mean_embedding_inputs(file_paths, multiclass=False)
+# np.save('Embeddings/MeanWordEmbeddings.npy', X)
+
+X = get_mean_embedding_inputs(file_paths, multiclass=True)
+np.save('Embeddings/MulticlassMeanWordEmbeddings.npy', X)

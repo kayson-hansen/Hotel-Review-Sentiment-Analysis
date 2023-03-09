@@ -1,8 +1,9 @@
 import csv
 import numpy as np
 import spacy
-import gensim
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 import string
+from pathlib import Path
 
 
 def load_dataset(files, multiclass):
@@ -26,7 +27,7 @@ def load_dataset(files, multiclass):
             reader = csv.reader(f)
             for row in reader:
                 if multiclass:
-                    labels.append(int(row[0])/10)
+                    labels.append(int(row[0])/10 - 1)
                     reviews.append(row[1])
                 else:
                     # only include 1 star, 2 star, 4 star, and 5 star reviews
@@ -62,7 +63,7 @@ def get_mean_embedding_inputs(filenames, multiclass):
 
     for i in range(m):
         # measure the progress over time
-        if i % 500 == 0:
+        if i % 1000 == 0:
             print(i)
         tokens = nlp(reviews[i])
         # use the mean of all the word embeddings as the total review embedding
@@ -96,43 +97,53 @@ def get_doc2vec_inputs(filenames, multiclass):
     n = num_features
 
     # strip reviews of punctuation and split them into lists of tokens
+    examples = []
     train_corpus = []
     for i in range(len(reviews)):
         review = reviews[i].translate(
             str.maketrans('', '', string.punctuation))
         tokens = review.lower().split(' ')
-        train_corpus.append(gensim.models.doc2vec.TaggedDocument(tokens, [i]))
+        examples.append(tokens)
+        train_corpus.append(TaggedDocument(tokens, [i]))
 
-    model = gensim.models.doc2vec.Doc2Vec(
-        vector_size=num_features, min_count=2, epochs=40)
-    model.build_vocab(train_corpus)
-    print("Finished building vocab!")
-    model.train(train_corpus, total_examples=model.corpus_count,
-                epochs=model.epochs)
+    # check if we've already trained and saved the model
+    model_filename = 'doc2vec/doc2vec_model'
+    if Path(model_filename).is_file():
+        model = Doc2Vec.load(model_filename)
+    # if we don't already have a trained model, build a vocab and train one
+    else:
+        model = Doc2Vec(vector_size=num_features, min_count=2, epochs=10)
+        model.build_vocab(train_corpus)
+        print("Finished building vocab!")
 
-    print("Finished training model!")
+        model.train(train_corpus, total_examples=model.corpus_count,
+                    epochs=model.epochs)
+        print("Finished training model!")
+        model.save(model_filename)
 
     X = np.zeros((m, n))
     for i in range(m):
         # measure the progress over time
-        if i % 500 == 0:
+        if i % 1000 == 0:
             print(i)
-        X[i] = model.infer_vector(train_corpus[i])
+        X[i] = model.infer_vector(examples[i])
     return X
 
 
-def get_outputs(filenames):
+def get_outputs(filenames, multiclass):
     """ From a list of filenames containing reviews and ratings, store whether each
     review contains positive or negative sentiment in a numpy array. Called by 
     create_inputs_and_outputs in the sentiment_analysis.py file.
 
     Args:
         filenames (List[String]): list of files containing input reviews and ratings
+        multiclass (Bool): true if we want to return the rating out of 5, false if we want to
+        return a positive or negative sentiment (1 or 0, respectively)
 
     Returns:
         (np.ndarray): vector of output sentiments, dimension num_inputs x 1
     """
-    review_texts, review_scores = load_dataset(filenames)
+    review_texts, review_scores = load_dataset(filenames, multiclass)
     m = len(review_scores)
     Y = np.zeros((m, 1))
     for i in range(m):
