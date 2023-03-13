@@ -4,21 +4,22 @@ import time
 
 # The paths to the files to store the hotel review data
 file_paths = [
-    "/users/kaysonhansen/cs129/HotelReviewData/VenetianHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/MirageHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/MandalayBayHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/TrumpInternationalHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/LuxorHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/TreasureIslandHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/ParisHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/CaesarsPalaceHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/ARIAHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/PlanetHollywoodHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/PalazzoHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/ParkMGMReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/VdaraHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/ExcaliburHotelReviews.csv",
-    "/users/kaysonhansen/cs129/HotelReviewData/WynnHotelReviews.csv"
+    "./HotelReviewData/VenetianHotelReviews.csv",
+    "./HotelReviewData/MirageHotelReviews.csv",
+    "./HotelReviewData/MandalayBayHotelReviews.csv",
+    "./HotelReviewData/TrumpInternationalHotelReviews.csv",
+    "./HotelReviewData/LuxorHotelReviews.csv",
+    "./HotelReviewData/TreasureIslandHotelReviews.csv",
+    "./HotelReviewData/ParisHotelReviews.csv",
+    "./HotelReviewData/CaesarsPalaceHotelReviews.csv",
+    "./HotelReviewData/ARIAHotelReviews.csv",
+    "./HotelReviewData/PlanetHollywoodHotelReviews.csv",
+    "./HotelReviewData/PalazzoHotelReviews.csv",
+    "./HotelReviewData/ParkMGMReviews.csv",
+    "./HotelReviewData/VdaraHotelReviews.csv",
+    "./HotelReviewData/ExcaliburHotelReviews.csv",
+    "./HotelReviewData/WynnHotelReviews.csv",
+    "./HotelReviewData/WestgateHotelReviews.csv"
 ]
 
 # There are 10 reviews per page, giving a total of 10 * pages_to_scrape reviews per hotel
@@ -40,13 +41,14 @@ urls = [
     "https://www.tripadvisor.com/Hotel_Review-g45963-d97712-Reviews-Park_MGM_Las_Vegas-Las_Vegas_Nevada.html",
     "https://www.tripadvisor.com/Hotel_Review-g45963-d1474086-Reviews-Vdara_Hotel_Spa-Las_Vegas_Nevada.html",
     "https://www.tripadvisor.com/Hotel_Review-g45963-d97786-Reviews-Excalibur_Hotel_Casino-Las_Vegas_Nevada.html",
-    "https://www.tripadvisor.com/Hotel_Review-g45963-d503598-Reviews-Wynn_Las_Vegas-Las_Vegas_Nevada.html"
+    "https://www.tripadvisor.com/Hotel_Review-g45963-d503598-Reviews-Wynn_Las_Vegas-Las_Vegas_Nevada.html",
+    "https://www.tripadvisor.com/Hotel_Review-g45963-d91878-Reviews-Westgate_Las_Vegas_Resort_Casino-Las_Vegas_Nevada.html"
 ]
 
 # n = which hotel to scrape
 # 0 = The Venetian, 1 = The Mirage, 2 = Mandalay Bay, 3 = Trump International, 4 = Luxor,
 # 5 = Treasure Island, 6 = Paris, 7 = Caesars Palace, 8 = ARIA, 9 = Planet Hollywood,
-# 10 = Palazzo, 11 = Park MGM, 12 = Vdara, 13 = Excalibur, 14 = Wynn, 15 = Rio
+# 10 = Palazzo, 11 = Park MGM, 12 = Vdara, 13 = Excalibur, 14 = Wynn, 15 = Westgate
 n = 15
 
 
@@ -105,3 +107,7 @@ def scrape_hotel_reviews(n):
 
     # When all pages have been processed, quit the driver
     driver.quit()
+
+
+# uncomment the line below to scrape a new hotel for reviews
+# scrape_hotel_reviews(n)

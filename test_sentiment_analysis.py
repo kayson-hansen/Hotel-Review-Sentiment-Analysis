@@ -1,4 +1,4 @@
-from sentiment_analysis import evaluate_model, training_loop
+from sentiment_analysis import evaluate_model
 from web_scraper import file_paths
 
 

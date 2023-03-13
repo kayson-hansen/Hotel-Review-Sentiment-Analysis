@@ -335,12 +335,21 @@ def training_loop(input_filename, output_filenames, algorithm, softmax, metric):
 
     scores = {}
     learning_rate = 0.01
-    num_epochs = 3
-    batch_size = 32
+    num_epochs = 2
+    batch_size = 16
     for i in range(10):
+        if metric == 'learning rate':
+            # start at 0.01, then try increasing multiples
+            learning_rate = (i + 1) * 0.01
+        elif metric == 'num epochs':
+            # start at 3, then try incrementing by 1 each time
+            num_epochs += 1
+        else:
+            # start at 16, then try increasing multiples
+            batch_size = (i + 1) * 16
         if algorithm == 'neural network' and softmax:
             model = train_softmax_neural_network_model(
-                x_train, y_train, learning_rate, num_epochs, batch_size)
+                x_train, y_train, learning_rate + i*0.01, num_epochs, batch_size)
         elif algorithm == 'neural network' and not softmax:
             model = train_neural_network_model(
                 x_train, y_train, learning_rate, num_epochs, batch_size)
@@ -369,6 +378,9 @@ def training_loop(input_filename, output_filenames, algorithm, softmax, metric):
                     cv_set_yhat[i] = 0
 
         accuracy = accuracy_score(y_cv, cv_set_yhat)
-        scores[i] = accuracy
-
-    print(scores)
+        if metric == 'learning rate':
+            scores[learning_rate] = accuracy
+        elif metric == 'num epochs':
+            scores[num_epochs] = accuracy
+        else:
+            scores[batch_size] = accuracy

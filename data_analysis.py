@@ -2,6 +2,7 @@ import csv
 import numpy as np
 from web_scraper import file_paths
 import matplotlib.pyplot as plt
+from sentiment_analysis import training_loop
 
 
 def find_num_ratings_per_star(files):
@@ -56,13 +57,31 @@ def find_standard_deviation(reviews):
     return np.std(ratings)
 
 
-reviews = find_num_ratings_per_star(file_paths)
-print("Number of reviews per star rating: ", reviews)
-print("Average rating: ", find_average_rating(reviews))
-print("Standard deviation: ", find_standard_deviation(reviews))
+def find_basic_stats():
+    reviews = find_num_ratings_per_star(file_paths)
+    print("Number of reviews per star rating: ", reviews)
+    print("Average rating: ", find_average_rating(reviews))
+    print("Standard deviation: ", find_standard_deviation(reviews))
 
-plt.bar(reviews.keys(), reviews.values(), color='b')
-plt.title('Rating star distribution')
-plt.xlabel('Number of stars')
-plt.ylabel('Number of reviews')
+    plt.bar(reviews.keys(), reviews.values(), color='b')
+    plt.title('Rating star distribution')
+    plt.xlabel('Number of stars')
+    plt.ylabel('Number of reviews')
+    plt.show()
+
+
+# model can be 'neural network' or 'logistic regression'
+model = 'neural network'
+# output can be 'softmax' or 'binary'
+output = 'softmax'
+# metric can be 'learning_rate', 'num_epochs', or 'batch_size
+metric = 'learning rate'
+# TODO: add regularization metric
+
+scores = training_loop(
+    'Embeddings/MulticlassDoc2VecEmbeddings.npy', file_paths, model, output, metric)
+plt.plot(scores.keys(), scores.values())
+plt.title('Accuracy vs learning rate')
+plt.xlabel('Learning rate')
+plt.ylabel('Accuracy')
 plt.show()
