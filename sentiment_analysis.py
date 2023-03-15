@@ -7,6 +7,26 @@ from tensorflow.keras.layers import Dense, InputLayer
 from tensorflow.keras.regularizers import L2
 from sklearn.metrics import accuracy_score, precision_score, recall_score, confusion_matrix, ConfusionMatrixDisplay
 import matplotlib.pyplot as plt
+from sklearn.model_selection import train_test_split
+
+
+def create_data_splits(X, Y):
+    """ Splits the data into training, cross-validation, and test sets. Uses stratified splitting
+    to ensure that the proportions of each class are the same in each set.
+
+    Args:
+        X (np.ndarray): inputs
+        Y (np.ndarray): outputs
+
+    Returns:
+        X_train (np.ndarray), X_cv (np.ndarray), X_test (np.ndarray): the inputs for the training, cross-validation, and test sets
+    """
+    x_train, x_cv_and_test, y_train, y_cv_and_test = train_test_split(
+        X, Y, stratify=Y, test_size=0.2)
+    x_cv, x_test, y_cv, y_test = train_test_split(
+        x_cv_and_test, y_cv_and_test, stratify=y_cv_and_test, test_size=0.5)
+
+    return x_train, x_cv, x_test, y_train, y_cv, y_test
 
 
 def create_inputs_and_outputs(input_file, output_files, multiclass, shuffle=True):
@@ -46,7 +66,7 @@ def create_inputs_and_outputs(input_file, output_files, multiclass, shuffle=True
     return X, Y
 
 
-def train_neural_network_model(x_train, y_train, learning_rate=0.05, epochs=3, batch_size=64):
+def train_neural_network_model(x_train, y_train, learning_rate=0.001, epochs=10, batch_size=128):
     """ Given a set of inputs and outputs, train a neural network model using tensorflow.
     Called by evaluate_model.
 
@@ -86,7 +106,7 @@ def train_neural_network_model(x_train, y_train, learning_rate=0.05, epochs=3, b
     return model
 
 
-def train_softmax_neural_network_model(x_train, y_train, learning_rate=0.05, epochs=3, batch_size=64):
+def train_softmax_neural_network_model(x_train, y_train, learning_rate=0.001, epochs=10, batch_size=128):
     """ Given a set of inputs and outputs, train a neural network model using tensorflow.
     Called by evaluate_model.
 
@@ -126,7 +146,7 @@ def train_softmax_neural_network_model(x_train, y_train, learning_rate=0.05, epo
     return model
 
 
-def train_logistic_regression_model(x_train, y_train, learning_rate=0.05, epochs=3, batch_size=64):
+def train_logistic_regression_model(x_train, y_train, learning_rate=0.001, epochs=10, batch_size=128):
     """ Given a set of inputs and outputs, train a logistic regression model using tensorflow.
     Called by evaluate_model.
 
@@ -164,7 +184,7 @@ def train_logistic_regression_model(x_train, y_train, learning_rate=0.05, epochs
     return model
 
 
-def train_softmax_logistic_regression_model(x_train, y_train, learning_rate=0.05, epochs=3, batch_size=64):
+def train_softmax_logistic_regression_model(x_train, y_train, learning_rate=0.001, epochs=10, batch_size=128):
     """ Given a set of inputs and outputs, train a logistic regression model using tensorflow.
     Called by evaluate_model.
 
@@ -218,13 +238,8 @@ def evaluate_model(input_filename, output_filenames, algorithm, softmax, confusi
         input_filename, output_filenames, softmax)
     m = X.shape[0]
 
-    # splits are 80/10/10 train/cross-validation/test
-    m1 = int(m * 8/10)
-    m2 = int(m * 9/10)
-    x_train = X[:m1, :]
-    x_cv = X[m1:m2, :]
-    x_test = X[m2:m, :]
-    y_train = Y[:m1, :]
+    # split data into train, cross validation, and test sets
+    x_train, x_cv, x_test, y_train, y_cv, y_test = create_data_splits(X, Y)
 
     if algorithm == 'neural network' and softmax:
         model = train_softmax_neural_network_model(x_train, y_train)
@@ -237,10 +252,9 @@ def evaluate_model(input_filename, output_filenames, algorithm, softmax, confusi
 
     # if the output is multiclass, add 1 to go from 0-4 star ratings to 1-5 star ratings
     if softmax:
-        Y += 1
-    y_train = Y[:m1, :]
-    y_cv = Y[m1:m2, :]
-    y_test = Y[m2:m, :]
+        y_train += 1
+        y_cv += 1
+        y_test += 1
 
     # evaluate model on train set
     train_set_predictions = model.predict(x_train)
@@ -295,16 +309,25 @@ def evaluate_model(input_filename, output_filenames, algorithm, softmax, confusi
         print("Test set recall: ", recall_score(y_test, test_set_yhat))
 
     if confusion_matrix:
-        generate_confusion_matrix(y_cv, cv_set_yhat)
+        generate_confusion_matrix(y_cv, cv_set_yhat, softmax)
 
 
-def generate_confusion_matrix(y_cv, cv_set_yhat):
+def generate_confusion_matrix(y_cv, cv_set_yhat, softmax):
     cm = confusion_matrix(y_cv, cv_set_yhat)
-    disp = ConfusionMatrixDisplay(confusion_matrix=cm)
-    disp.plot()
-    plt.title('Cross-validation set confusion matrix')
-    plt.xlabel('Predicted sentiment')
-    plt.ylabel('True sentiment')
+    if softmax:
+        disp = ConfusionMatrixDisplay(
+            confusion_matrix=cm, display_labels=[1, 2, 3, 4, 5])
+        disp.plot()
+        plt.xlabel('Predicted rating')
+        plt.ylabel('True rating')
+    else:
+        disp = ConfusionMatrixDisplay(
+            confusion_matrix=cm, display_labels=[0, 1])
+        disp.plot()
+        plt.xlabel('Predicted sentiment')
+        plt.ylabel('True sentiment')
+
+    plt.title('Confusion Matrix')
     plt.show()
 
 
@@ -326,30 +349,27 @@ def training_loop(input_filename, output_filenames, algorithm, softmax, metric):
         input_filename, output_filenames, softmax)
     m = X.shape[0]
 
-    # splits are 80/10/10 train/cross-validation/test
-    m1 = int(m * 8/10)
-    m2 = int(m * 9/10)
-    x_train = X[:m1, :]
-    x_cv = X[m1:m2, :]
-    y_train = Y[:m1, :]
+    # split data into train, cross validation, and test sets
+    x_train, x_cv, x_test, y_train, y_cv, y_test = create_data_splits(X, Y)
 
     scores = {}
-    learning_rate = 0.01
-    num_epochs = 2
-    batch_size = 16
-    for i in range(10):
+    learning_rate = 0.001
+    num_epochs = 10
+    batch_size = 128
+    for i in range(5):
         if metric == 'learning rate':
-            # start at 0.01, then try increasing multiples
-            learning_rate = (i + 1) * 0.01
+            # start at 0.000001, then try increasing powers of 10
+            learning_rate = 10 ** (i - 5)
         elif metric == 'num epochs':
-            # start at 3, then try incrementing by 1 each time
-            num_epochs += 1
+            # start at 10, then try increasing multiples of 10
+            num_epochs = 10 * (i + 1)
         else:
-            # start at 16, then try increasing multiples
-            batch_size = (i + 1) * 16
+            # start at 32, then try increasing powers of 2
+            batch_size = 32 * 2 ** (i)
+
         if algorithm == 'neural network' and softmax:
             model = train_softmax_neural_network_model(
-                x_train, y_train, learning_rate + i*0.01, num_epochs, batch_size)
+                x_train, y_train, learning_rate, num_epochs, batch_size)
         elif algorithm == 'neural network' and not softmax:
             model = train_neural_network_model(
                 x_train, y_train, learning_rate, num_epochs, batch_size)
@@ -360,11 +380,13 @@ def training_loop(input_filename, output_filenames, algorithm, softmax, metric):
             model = train_logistic_regression_model(
                 x_train, y_train, learning_rate, num_epochs, batch_size)
 
-        # add 1 to go from 0-4 star ratings to 1-5 star ratings
-        Y += 1
-        y_cv = Y[m1:m2, :]
+        if softmax:
+            # add 1 to go from 0-4 star ratings to 1-5 star ratings
+            y_train += 1
+            y_cv += 1
+            y_test += 1
 
-        # evaluate model on train set
+        # evaluate model on cross-validation set
         cv_set_predictions = model.predict(x_cv)
         cv_set_yhat = np.zeros_like(y_cv)
         for i in range(len(x_cv)):
@@ -384,3 +406,11 @@ def training_loop(input_filename, output_filenames, algorithm, softmax, metric):
             scores[num_epochs] = accuracy
         else:
             scores[batch_size] = accuracy
+
+        if softmax:
+            # subtract 1 to go back to 0-4 star ratings for training the model
+            y_train -= 1
+            y_cv -= 1
+            y_test -= 1
+
+    return scores
