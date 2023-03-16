@@ -6,7 +6,7 @@ from web_scraper import file_paths
 # model can be 'neural network' or 'logistic regression'
 model = 'neural network'
 # embedding can be 'doc2vec' or 'mean'
-embedding = 'mean'
+embedding = 'doc2vec'
 # output can be 'softmax' or 'binary'
 output = 'softmax'
 # oucput can be True or False

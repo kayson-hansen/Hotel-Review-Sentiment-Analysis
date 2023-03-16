@@ -75,7 +75,7 @@ model = 'neural network'
 # embedding can be 'doc2vec' or 'mean'
 embedding = 'doc2vec'
 # output can be 'softmax' or 'binary'
-output = 'binary'
+output = 'softmax'
 # metric can be 'learning rate', 'num epochs', or 'batch size'
 metric = 'num epochs'
 # TODO: add regularization metric
