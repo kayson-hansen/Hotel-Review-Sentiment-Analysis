@@ -8,7 +8,7 @@ model = 'neural network'
 # embedding can be 'doc2vec' or 'mean'
 embedding = 'doc2vec'
 # output can be 'softmax' or 'binary'
-output = 'softmax'
+output = 'binary'
 # oucput can be True or False
 confusion_matrix = True
 

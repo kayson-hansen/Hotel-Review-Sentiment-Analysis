@@ -237,6 +237,9 @@ def evaluate_model(input_filename, output_filenames, algorithm, softmax, confusi
     X, Y = create_inputs_and_outputs(
         input_filename, output_filenames, softmax)
     m = X.shape[0]
+    n = X.shape[1]
+    print('Number of training examples: ', m)
+    print('Number of features: ', n)
 
     # split data into train, cross validation, and test sets
     x_train, x_cv, x_test, y_train, y_cv, y_test = create_data_splits(X, Y)
@@ -327,7 +330,10 @@ def generate_confusion_matrix(y_cv, cv_set_yhat, softmax):
         plt.xlabel('Predicted sentiment')
         plt.ylabel('True sentiment')
 
-    plt.title('Confusion Matrix')
+    if softmax:
+        plt.title('Multiclass Output Confusion Matrix')
+    else:
+        plt.title('Binary Output Confusion Matrix')
     plt.show()
 
 
