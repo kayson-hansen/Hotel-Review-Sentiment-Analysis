@@ -70,6 +70,48 @@ def find_basic_stats():
     plt.show()
 
 
+def tune_hyperparameters(model, embedding, output, metric):
+    """Trains and Evaluates the model of your choice over different values of a given metric
+
+    Args:
+        model (String): model to be evaluated
+        embedding (String): embedding to be used
+        output (String): output type of the model
+        metric (String): metric to be tuned
+
+    Returns:
+        None
+    """
+    # trains the model of your choice over different values of a given metric
+    if embedding == 'doc2vec' and output == 'softmax':
+        input_file = 'Embeddings/MulticlassDoc2VecEmbeddings.npy'
+        scores = training_loop(input_file, file_paths, model, softmax=True,
+                               metric=metric)
+    elif embedding == 'doc2vec' and output == 'binary':
+        input_file = 'Embeddings/Doc2VecEmbeddings.npy'
+        scores = training_loop(input_file, file_paths, model, softmax=False,
+                               metric=metric)
+    elif embedding == 'mean' and output == 'softmax':
+        input_file = 'Embeddings/MulticlassMeanWordEmbeddings.npy'
+        scores = training_loop(input_file, file_paths, model, softmax=True,
+                               metric=metric)
+    else:
+        input_file = 'Embeddings/MeanWordEmbeddings.npy'
+        scores = training_loop(input_file, file_paths, model, softmax=False,
+                               metric=metric)
+
+    if metric == 'learning rate' or metric == 'batch size':
+        plt.xscale('log')
+    x = list(scores.keys())
+    y = list(scores.values())
+    plt.plot(x, y)
+    plt.xticks(x, x)
+    plt.title('Accuracy vs ' + metric)
+    plt.xlabel(metric)
+    plt.ylabel('Accuracy')
+    plt.show()
+
+
 # model can be 'neural network' or 'logistic regression'
 model = 'neural network'
 # embedding can be 'doc2vec' or 'mean'
@@ -78,33 +120,5 @@ embedding = 'doc2vec'
 output = 'softmax'
 # metric can be 'learning rate', 'num epochs', or 'batch size'
 metric = 'num epochs'
-# TODO: add regularization metric
 
-# trains the model of your choice over different values of a given metric
-if embedding == 'doc2vec' and output == 'softmax':
-    input_file = 'Embeddings/MulticlassDoc2VecEmbeddings.npy'
-    scores = training_loop(input_file, file_paths, model, softmax=True,
-                           metric=metric)
-elif embedding == 'doc2vec' and output == 'binary':
-    input_file = 'Embeddings/Doc2VecEmbeddings.npy'
-    scores = training_loop(input_file, file_paths, model, softmax=False,
-                           metric=metric)
-elif embedding == 'mean' and output == 'softmax':
-    input_file = 'Embeddings/MulticlassMeanWordEmbeddings.npy'
-    scores = training_loop(input_file, file_paths, model, softmax=True,
-                           metric=metric)
-else:
-    input_file = 'Embeddings/MeanWordEmbeddings.npy'
-    scores = training_loop(input_file, file_paths, model, softmax=False,
-                           metric=metric)
-
-if metric == 'learning rate' or metric == 'batch size':
-    plt.xscale('log')
-x = list(scores.keys())
-y = list(scores.values())
-plt.plot(x, y)
-plt.xticks(x, x)
-plt.title('Accuracy vs ' + metric)
-plt.xlabel(metric)
-plt.ylabel('Accuracy')
-plt.show()
+tune_hyperparameters(model, embedding, output, metric)
